@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.10.4/mqtt.min.js" integrity="sha512-U6juml/sd5ivQOO5Nmd3IB8DUgRYRJ3whk/+oxaOJHyA9WtXXl3p42YoevQ7/PnuZR1Oir607H3A/+AjQ/gWug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Linker til index.js -->
+  <script src="index.js" defer></script>
+  <title>Multiplayer Top-Down Shooter</title>
+
+  <style>
+    canvas {
+      background-color: black;
+    }
+    
+  </style>  
+    <div id="startScreen">
+      <h1>Velkommen til spillet!</h1>
+      <label for="playerName">Indtast dit navn:</label>
+      <input type="text" id="playerName" placeholder="Spiller 1 navn">
+      <br><br>
+      <button onclick="startGame()">Start spil</button>
+  </div>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="1250" height="560"></canvas>
+
+
+</body>
+</html>
