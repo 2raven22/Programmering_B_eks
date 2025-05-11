@@ -1,5 +1,6 @@
 const mqttClient = mqtt.connect("wss://mqtt.nextservices.dk");
 
+//variabler til mqtt
 let joystickX = 0;
 let joystickY = 0;
 let joystickX2 = 0;
@@ -7,9 +8,7 @@ let joystickY2 = 0;
 let joystickS = 0;
 let joystickS2 = 0;
 
-
-
-
+//connect til mqtt. Hvia ja subscribe
 mqttClient.on('connect', () => {
     console.log("Connected to MQTT broker");
     mqttClient.subscribe('3xp');
@@ -17,13 +16,16 @@ mqttClient.on('connect', () => {
     
 });
 
+//hvis nej
     mqttClient.on('error', (err) => {
     console.error("MQTT connection error:", err);   
 });
 
+//prøv at parse/omskrive fra json til string
 mqttClient.on('message', (topic, message) => {
         try {
             const data = JSON.parse(message.toString());
+            //hvis topic er 3xp omskriv x,y og space data til variabler
             if (topic === '3xp') {
             joystickX = data.x;
             joystickY = data.y;
@@ -33,6 +35,7 @@ mqttClient.on('message', (topic, message) => {
             joystickY2 = data.y;
             joystickS2 = data.space
             }
+            //hvis ikke catch
         } catch (err) {
             console.error("Error parsing joystick data", err);
         }
@@ -69,6 +72,7 @@ class Player {
         this.bullets.forEach(b => b.draw(ctx)); // Tegner skuddene
     }
 
+    //joystick x og y intervaller samt direction
     moveWithJoystick(xVal, yVal) {
         console.log("Joystick-bevægelse:", xVal, yVal);
         if (this.isDead) return;
@@ -94,7 +98,6 @@ class Player {
     moveWithJoystick2(xVal, yVal) {
         console.log("Joystick-bevægelse2:", xVal, yVal);
         if (this.isDead) return;
-        const threshold = 0.2; // deadzone
         const speed = 3;
     
         if (yVal >= 0 && yVal <= 105 && this.y - speed >= 0) {
@@ -115,6 +118,7 @@ class Player {
         }
     }
     
+    //skydder via joystick space == 0 || space == 1
     joytickShoot(){
         if(joystickS == 1){
             player1.shoot();
@@ -304,19 +308,31 @@ let minimumInterval = 1000;
 let intervalReducer = 250;
 let enemySpeed = 1;
 
+//hvor skal fjender spawne
 function spawnEnemy() {
+    //bruger indbyget objekt math til at lave en 50/50 chance om fjenden spawner på venstre eller højre side af skærmen
     const spawnSide = Math.random() < 0.5 ? 'left' : 'right';
+    //random y koordinat
     const spawnY = Math.random() * canvas.height;
+    //if spawnside er venstre sæt x = -20 else x = canvas + 20
     let spawnX = spawnSide === 'left' ? -20 : canvas.width + 20;
+    //på den måde spawner fjenderne uden for canvas
 
+    //ny fjender der bruger den random x, y samt gør fjenden rød og bruger en tiligere defineret speed
     const enemy = new Enemy(spawnX, spawnY, "red", enemySpeed);
+    //lægger fjenden ind i arrayet så de kan tegnes, opdateres samt holder styr på deres position i arrayet
     enemies.push(enemy);
 }
 
+//får fjenderne til at starte med at spawne
 function startEnemySpawner() {
+    //venter spawninterval
     setTimeout(function spawn() {
+        //kalder spawn enemy
         spawnEnemy();
+        //reducer spawninterval over tid og bruger minimuminterval så spawninterval aldrig går under 1 sekundt
         spawnInterval = Math.max(minimumInterval, spawnInterval - intervalReducer);
+        //kalder spawn igen efter at have opdateret spawninterval og skaber et loop
         setTimeout(spawn, spawnInterval);
     }, spawnInterval);
 }
